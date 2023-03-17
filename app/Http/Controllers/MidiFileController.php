@@ -37,7 +37,7 @@ class MidiFileController extends Controller
         $identificatore = uniqid();
 
         // MIDI
-        $name = '/midi/' . $identificatore . '.mid';
+        $name = 'midi/' . $identificatore . '.mid';
         $data = base64_decode($request->midifile);
         Storage::disk('public')->put($name, $data);
 

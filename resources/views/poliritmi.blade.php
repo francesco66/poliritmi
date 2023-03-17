@@ -67,7 +67,7 @@
                 </label>
                 <label class="input-group pb-4">
                     <span class="w-32">Divisors</span>
-                    <input id="divisors" type="number" min="2" max="18" value="9"
+                    <input id="divisors" type="number" min="3" max="18" value="9"
                         class="input input-bordered w-24" />
                 </label>
 
@@ -108,8 +108,8 @@
                         class="text-blue-400">{{ $midifilename }}</span>
                     è pronto
                 </p>
-                <midi-player src="{{ asset('/storage/' . $midifilename) }}" sound-font visualizer="#myVisualizer">
-                </midi-player>
+                {{-- <midi-player src="{{ asset('/storage/' . $midifilename) }}" sound-font visualizer="#myVisualizer">
+                </midi-player> --}}
                 {{-- <midi-visualizer type="staff" id="myVisualizer"></midi-visualizer> --}}
 
                 <h1 class="text-xl">CSOUND</h1>
@@ -119,6 +119,11 @@
                 <textarea id="console" class="textarea textarea-primary h-80" placeholder="Csound message"></textarea>
 
             </div>
+        </div>
+
+        {{-- TEST --}}
+        <div class="mt-4">
+          <x-midi-player :midifile="$midifilename"></x-midi-player>
         </div>
 
         <button id="viewscore" class="btn btn-secondary my-4">View Score</button>
@@ -138,6 +143,7 @@
         <div id="notation" class="h-screen"></div>
 
     </div>
+    @stack('js')
 </body>
 
 <script>

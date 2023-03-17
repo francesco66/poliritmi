@@ -1,8 +1,8 @@
-// 12 marzo 2023
+// 15marzo 2023
 
 import MidiWriter from 'midi-writer-js';
 import Csound from "@csound/browser";
-import csd from '../../storage/app/public/poli.csd?raw'
+import csd from '../../storage/app/public/poliritmi.csd?raw'
 
 var dataMEI = '<?xml version="1.0" encoding="UTF-8"?>\n' +
     '<mei meiversion="3.0.0" xmlns="http://www.music-encoding.org/ns/mei">\n' +

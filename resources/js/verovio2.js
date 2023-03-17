@@ -1,4 +1,4 @@
-// 12 marzo 2023
+// 15 marzo 2023
 
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';

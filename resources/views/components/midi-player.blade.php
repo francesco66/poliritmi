@@ -41,94 +41,82 @@
 </div>
 
 @push('js')
-<script>
-  // console.log(MIDIjs);
+    <script>
+        var name = "{{ $midifile }}";
 
-  // const midifilename = "default.mid"
-  var name = "{{ $midifile }}";
-  // console.log(test);
+        // const midifilename = "../../storage/" + name;
+        const midifile = document.getElementById("midifile");
+        var playing = false;
+        var totalDuration = 0;
 
-  const midifilename = "../../storage/" + name;
-  var playing = false;
-  var totalDuration = 0;
+        function getMS(time) {
+            const M = Math.floor(time / 60);
+            const S = Math.floor(time - M * 60);
+            const finalTime = str_pad_left(M, '0', 2) + '.' + str_pad_left(S, '0', 2);
+            return [finalTime];
+        }
 
-  function getMS(time) {
-      const M = Math.floor(time / 60);
-      const S = Math.floor(time - M * 60);
-      const finalTime = str_pad_left(M, '0', 2) + '.' + str_pad_left(S, '0', 2);
-      return [finalTime];
-  }
+        function str_pad_left(string, pad, length) {
+            return (new Array(length + 1).join(pad) + string).slice(-length);
+        }
 
-  function str_pad_left(string, pad, length) {
-      return (new Array(length + 1).join(pad) + string).slice(-length);
-  }
+        const playMIDIHandler = function(e) {
+            let midiString = 'data:audio/midi;base64,' + midifile.value;
+            playM.style.visibility = "collapse";
+            pauseM.style.visibility = "visible";
+            if (playing) {
+                MIDIjs.resume();
+            } else {
+                MIDIjs.play(midiString);
+                playing = true;
+            }
+        }
 
-  const playMIDIHandler = function(e) {
-      // let midiString = 'data:audio/midi;base64,' + base64midi;
-      playM.style.visibility = "collapse";
-      pauseM.style.visibility = "visible";
-      if (playing) {
-          MIDIjs.resume();
-      } else {
-          MIDIjs.play(midifilename);
-          playing = true;
-      }
-  }
+        const pauseMIDIHandler = function() {
+            playM.style.visibility = "visible";
+            pauseM.style.visibility = "collapse";
+            MIDIjs.pause();
+        }
 
-  const pauseMIDIHandler = function() {
-      // let midiString = 'data:audio/midi;base64,' + base64midi;
-      playM.style.visibility = "visible";
-      pauseM.style.visibility = "collapse";
-      MIDIjs.pause(midifilename);
-  }
+        const stopMIDIHandler = function() {
+            var T = getMS(0);
+            currenttime.innerHTML = T;
+            progress.value = 0;
+            playM.style.visibility = "visible";
+            pauseM.style.visibility = "collapse";
+            MIDIjs.stop();
+            playing = false;
+        }
 
-  const stopMIDIHandler = function() {
-      var T = getMS(0);
-      currenttime.innerHTML = T;
-      progress.value = 0;
-      playM.style.visibility = "visible";
-      pauseM.style.visibility = "collapse";
-      MIDIjs.stop();
-      playing = false;
-  }
+        // function midiCallback(e) {
+        //     var T = getMS(e.time);
+        //     currenttime.innerHTML = T;
+        //     progress.value = ((e.time * 100) / totalDuration);
+        //     if (e.time == totalDuration) {
+        //         stopM.click();
+        //     }
+        // }
 
-  const midiCallback = function(e) {
-      // e.time, e.status
-      // progress.value = e.time * 1000;
-      // var T = getMS(Math.floor(e.time));
-      var T = getMS(e.time);
-      currenttime.innerHTML = T;
-      // console.log((e.time*100) / totalDuration);
-      progress.value = ((e.time * 100) / totalDuration);
-      // console.log(e.time, totalDuration);
-      if (e.time == totalDuration) {
-          stopM.click();
-      }
-  }
+        const progress = document.getElementById("progress")
+        const currenttime = document.getElementById("currenttime")
+        const totaltime = document.getElementById("totaltime")
 
-  const progress = document.getElementById("progress")
-  const currenttime = document.getElementById("currenttime")
-  const totaltime = document.getElementById("totaltime")
+        const playM = document.getElementById("playM")
+        playM.addEventListener("click", playMIDIHandler);
+        const pauseM = document.getElementById("pauseM")
+        pauseM.addEventListener("click", pauseMIDIHandler);
+        const stopM = document.getElementById("stopM")
+        stopM.addEventListener("click", stopMIDIHandler);
+        pauseM.style.visibility = "collapse";
 
-  // Wire up the buttons to actually work.
-  const playM = document.getElementById("playM")
-  playM.addEventListener("click", playMIDIHandler);
-  const pauseM = document.getElementById("pauseM")
-  pauseM.addEventListener("click", pauseMIDIHandler);
-  const stopM = document.getElementById("stopM")
-  stopM.addEventListener("click", stopMIDIHandler);
-  pauseM.style.visibility = "collapse";
+        // Set the function as message callback
+        // MIDIjs.player_callback = midiCallback;
 
-  // Set the function as message callback
-  MIDIjs.player_callback = midiCallback;
-
-  MIDIjs.get_duration(midifilename, function(seconds) {
-      console.log(seconds);
-      const T = getMS(seconds);
-      totalDuration = seconds;
-      totaltime.innerHTML = T;
-  });
-</script>
+        MIDIjs.get_duration('data:audio/midi;base64,' + midifile.value, function(seconds) {
+            const T = getMS(seconds);
+            totalDuration = seconds;
+            totaltime.innerHTML = T;
+        });
+    </script>
 @endpush
 </body>
-

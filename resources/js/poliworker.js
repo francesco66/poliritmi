@@ -1,7 +1,34 @@
-// 22 marzo 2023
-
-import MidiWriter from 'midi-writer-js';
-import Csound from "@csound/browser";
+var CSD = '<CsoundSynthesizer>\n' +
+'<CsOptions>\n' +
+'</CsOptions>\n' +
+'<CsInstruments>\n' +
+'sr=44100\n' +
+'ksmps=64\n' +
+'nchnls=2\n' +
+'0dbfs=1\n' +
+'\n' +
+'instr 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15\n' +
+'\n' +
+'icps = cpsmidinn(p4)\n' +
+'iamp = p5*0.001\n' +
+'\n' +
+'ioct = octcps(icps)\n' +
+'kpwm = oscili(.1, 5)\n' +
+'asig = vco2(iamp, icps, 4, .5 + kpwm)\n' +
+'asig += vco2(iamp, icps * 2)\n' +
+'\n' +
+'idepth = 3\n' +
+'acut = transegr:a(0, .002, 0, idepth, .5, -4.2, 0.001, .5, -4.2, 0)\n' +
+'asig = zdf_2pole(asig, cpsoct(ioct + acut), 0.5)\n' +
+'\n' +
+'asig *= linsegr:a(1, p3, 1, .5, 0)\n' +
+'\n' +
+'out(asig*0.5, asig*0.5)\n' +
+'\n' +
+'endin\n' +
+'\n' +
+'</CsInstruments>\n' +
+'<CsScore>\n'
 
 var dataMEI = '<?xml version="1.0" encoding="UTF-8"?>\n' +
     '<mei meiversion="3.0.0" xmlns="http://www.music-encoding.org/ns/mei">\n' +
@@ -66,7 +93,7 @@ function getRandomInt(max) {
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 TAVOLA DEI RITMI
-
+ 
 mkTavolaRitmi(numero_di_linee, suddivisioni, con_ripetizioni = false, tavola_suddivisioni_richieste = nil)
 che usa
 TavolaRitmi(numero_di_linee, suddivisioni, con_ripetizioni)
@@ -130,7 +157,7 @@ function TavolaRitmi(numero_di_linee, suddivisioni, con_ripetizioni) {
 
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 costruisce la tavola degli accenti per ogni ritmo, opzionale array dei valori degli accenti mezzoforte e debole (default 0.75, 0.5)
-
+ 
 mkTavolaAccenti(ritmo, acc)
 che usa
 possibili_divisioni(ritmo);
@@ -301,50 +328,24 @@ function midiScore(score, tracks) {
 }
 
 function csoundScore(score) {
-    var csd = '<CsoundSynthesizer>\n' +
-    '<CsOptions>\n' +
-    '-odac\n' +
-    '</CsOptions>\n' +
-    '<CsInstruments>\n' +
-    'sr=44100\n' +
-    'ksmps=64\n' +
-    'nchnls=2\n' +
-    '0dbfs=1\n' +
-    '\n' +
-    'instr 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15\n' +
-    '\n' +
-    'icps = cpsmidinn(p4)\n' +
-    'iamp = p5*0.001\n' +
-    '\n' +
-    'ioct = octcps(icps)\n' +
-    'kpwm = oscili(.1, 5)\n' +
-    'asig = vco2(iamp, icps, 4, .5 + kpwm)\n' +
-    'asig += vco2(iamp, icps * 2)\n' +
-    '\n' +
-    'idepth = 3\n' +
-    'acut = transegr:a(0, .002, 0, idepth, .5, -4.2, 0.001, .5, -4.2, 0)\n' +
-    'asig = zdf_2pole(asig, cpsoct(ioct + acut), 0.5)\n' +
-    '\n' +
-    'asig *= linsegr:a(1, p3, 1, .5, 0)\n' +
-    '\n' +
-    'out(asig*0.5, asig*0.5)\n' +
-    '\n' +
-    'endin\n' +
-    '\n' +
-    '</CsInstruments>\n' +
-    '<CsScore>\n'
-
+    var SCO = '';
     for (var i = 0; i < score.length; i++) {
-        csd += 'i' + (score[i].traccia + 1) + ' ' + score[i].start + ' ' + score[i].duration + ' ' + score[i].nota + ' ' + score[i].velocity + '\n';
+        SCO += 'i' + (score[i].traccia + 1) + ' ' + score[i].start + ' ' + score[i].duration + ' ' + score[i].nota + ' ' + score[i].velocity + '\n';
+        CSD += 'i' + (score[i].traccia + 1) + ' ' + score[i].start + ' ' + score[i].duration + ' ' + score[i].nota + ' ' + score[i].velocity + '\n';
     }
-    csd += '</CsScore>\n' +
-        '</CsoundSynthesizer>\n'
+    scorefile.value = SCO;
+    // return SCO;
 
-    csdfile.value = csd;
+    CSD += '</CsScore>\n' +
+    '</CsoundSynthesizer>\n'
+
+    // return csd;
 }
 
 function meiScore(score) {
     var numMisure = score.length / numero_di_linee / battuta / 4;
+    // console.log(numMisure);
+
     // riordina la score per tempo di inizio delle note
     score.sort((a, b) => a.start - b.start);
     // tutte le misure
@@ -386,6 +387,8 @@ function meiScore(score) {
                 pitches += '  </layer>\n' + ' </staff>\n'
             }
         } else {
+            // console.log(S[m].length, 'per traccia', S[m].length / numero_di_linee);
+            // dividi per S[m].length / numero_di_linee (ogni S[m].length / numero_di_linee una traccia)
             for (var l = 0; l < S[m].length; l += S[m].length / numero_di_linee) {
                 pitches += '<staff n="' + (l / (S[m].length / numero_di_linee) + 1) + '">\n<layer n="' + (l / (S[m].length / numero_di_linee) + 1) + '">\n'
                 for (var n = 0; n < S[m].length / numero_di_linee; n++) {
@@ -438,7 +441,7 @@ function meiScore(score) {
         '</music>\n' +
         '</mei>\n'
 
-    meifile.value = dataMEI;
+    meifile.value = String(dataMEI);
 }
 
 // calcola la score totale
@@ -458,127 +461,27 @@ function calcolaScore() {
     return scoreTotale;
 }
 
-// scrive una score per Csound e una midi - per MEI file
 function Run() {
 
-    // myWorker();
+    console.log("web worker!");
 
-    var score = calcolaScore();
+    window.setTimeout(function () {
+        var score = calcolaScore();
 
-    // midi
-    // prepara le tracce
-    const tracks = prepareMidiScore();
-    midiScore(score, tracks);
+        // midi
+        // prepara le tracce
+        const tracks = prepareMidiScore();
+        midiScore(score, tracks);
 
-    // csound
-    csoundScore(score);
+        // csound
+        csoundScore(score);
 
-    meiScore(score);
+        meiScore(score);
 
-    // playB.disabled = false;
+        // playB.disabled = false;
+        buttonSubmit.click();
 
-    // SOLO PER SALVARE I FILES SE RICHIESTO
-    // buttonSubmit.click();
-
-    // vedi verovio score
-    // viewscore.click();
+        // vedi verovio score
+        // viewscore.click();
+    }, 0);
 }
-
-// CSOUND
-// message handling
-function handleMessage(msg) {
-    csconsole.value += "\n" + msg;
-    csconsole.scrollTop = csconsole.scrollHeight;
-}
-
-let csound = null;
-
-async function play() {
-    if (csound == null) {
-        csconsole.value = '';
-        csound = await Csound();
-    }
-    // await csound.setOption("-odac");
-    await csound.compileCsdText(csdfile.value);
-    csconsole.value = csdfile.value;
-    await csound.start();
-
-    csound.on("message", handleMessage)
-}
-
-var sections = document.getElementById("sections");
-var lines = document.getElementById("lines");
-var divisors = document.getElementById("divisors");
-var midi = document.getElementById("midi");
-var acc1 = document.getElementById("acc1");
-var acc2 = document.getElementById("acc2");
-var repetitions = document.getElementById("repetitions");
-repetitions.checked = false;
-
-// una battuta di 4/4
-const battuta = 4
-var sezioni;
-var numero_di_linee;
-var suddivisioni;
-var con_ripetizioni;
-var tavola_suddivisioni_richieste = null;
-var taccenti = [];
-var midi_note;
-
-// DEAFAULT
-const BPM = 120;
-// significa che 1 quarto dura 0.5 sec. quindi 1 sedicesimo dura 0.125
-const durata_nota = 0.125;
-const notePerQuarto = (BPM / (battuta * 60)) / durata_nota;
-
-sections.addEventListener('click', () => {
-    sezioni = sections.value;
-});
-
-divisors.addEventListener('click', () => {
-    suddivisioni = divisors.value;
-});
-
-lines.addEventListener('click', () => {
-    numero_di_linee = lines.value;
-});
-
-acc1.addEventListener('click', () => {
-    taccenti[0] = acc1.value;
-});
-
-acc2.addEventListener('click', () => {
-    taccenti[1] = acc2.value;
-});
-
-midi.addEventListener('click', () => {
-    midi_note = Number(midi.value);
-});
-
-sections.click();
-divisors.click();
-lines.click();
-acc1.click();
-acc2.click();
-midi.click();
-
-var midifile = document.getElementById("midifile");
-var csdfile = document.getElementById("csdfile");
-var meifile = document.getElementById("meifile");
-var buttonSubmit = document.getElementById("submit");
-
-const csconsole = document.getElementById('console');
-const playB = document.getElementById('play');
-const stopB = document.getElementById('stop');
-
-playB.addEventListener('click', play);
-// playB.disabled = true;
-
-var viewscore = document.getElementById("viewscore");
-// viewscore.addEventListener('click', () => {
-//     renderScore();
-// });
-
-var button = document.getElementById("button");
-button.addEventListener('click', Run);
-

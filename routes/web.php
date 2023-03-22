@@ -19,9 +19,9 @@ Route::get('/', [MidiFileController::class, 'index']);
 Route::get('/poliritmi', [MidiFileController::class, 'index']);
 Route::post('/poliritmi', [MidiFileController::class, 'store']);
 
-Route::get('/verovio', function () {
-    return view('verovio');
-});
+// Route::get('/verovio', function () {
+//     return view('verovio');
+// });
 
 Route::get('/dashboard', function () {
     return view('dashboard');

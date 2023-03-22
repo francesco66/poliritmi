@@ -16,7 +16,7 @@ class MidiFileController extends Controller
         return view('poliritmi', [
             'midifilename' => 'default.mid',
             'meifilename' => '',
-            'scorefilename' => ''
+            'csdfilename' => ''
         ]);
     }
 
@@ -42,8 +42,8 @@ class MidiFileController extends Controller
         Storage::disk('public')->put($name, $data);
 
         // Csound score
-        $nameSco = '/score/' . $identificatore . '.sco';
-        $dataSco = $request->scorefile;
+        $nameSco = '/score/' . $identificatore . '.csd';
+        $dataSco = $request->csdfile;
         Storage::disk('public')->put($nameSco, $dataSco);
 
         // MEI score
@@ -54,7 +54,7 @@ class MidiFileController extends Controller
         return view('poliritmi', [
             'midifilename' => $name,
             'meifilename' => "../../storage" . $nameMeiSco,
-            'scorefilename' => '../../storage'. $nameSco
+            'csdfilename' => '../../storage'. $nameSco
         ]);
     }
 

@@ -481,7 +481,7 @@ function Run() {
     // buttonSubmit.click();
 
     // vedi verovio score
-    // viewscore.click();
+    viewscore.click();
 }
 
 // CSOUND
@@ -500,7 +500,7 @@ async function play() {
     }
     // await csound.setOption("-odac");
     await csound.compileCsdText(csdfile.value);
-    csconsole.value = csdfile.value;
+    // csconsole.value = csdfile.value;
     await csound.start();
 
     csound.on("message", handleMessage)

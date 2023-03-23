@@ -1,4 +1,4 @@
-// 15 marzo 2023
+// 23 marzo 2023
 
 import createVerovioModule from 'verovio/wasm';
 import { VerovioToolkit } from 'verovio/esm';
@@ -16,11 +16,11 @@ createVerovioModule().then(VerovioModule => {
     // The current page, which will change when playing through the piece
     let currentPage = 1;
 
-    const midiHightlightingHandler = function (event) {
+    function midiHightlightingHandler(event) {
         // per midi player
         var T = getMS(event.time);
         currenttime.innerHTML = T;
-        progress.value = ((event.time * 100) / totalDuration);
+        progress.value = Number((event.time * 100) / totalDuration);
         if (event.time == totalDuration) {
             stopM.click();
         }
@@ -45,18 +45,13 @@ createVerovioModule().then(VerovioModule => {
     // Set the function as message callback
     MIDIjs.player_callback = midiHightlightingHandler;
 
-    // MIDIjs.get_duration('data:audio/midi;base64,' + midifile.value, function(seconds) {
-    //     const T = getMS(seconds);
-    //     totalDuration = seconds;
-    //     totaltime.innerHTML = T;
-    // });
-
     function renderScore() {
-        tk.loadData(document.getElementById("meifilename").value);
+        duration();
+        tk.loadData(document.getElementById("meifile").value);
         let svg = tk.renderToSVG(1);
         document.getElementById("notation").innerHTML = svg;
     }
 
-    renderScore();
+    document.getElementById("viewscore").addEventListener("click", renderScore);
 
 });

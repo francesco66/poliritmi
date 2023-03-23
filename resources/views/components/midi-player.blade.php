@@ -42,10 +42,16 @@
 
 @push('js')
     <script>
-        var name = "{{ $midifile }}";
-
-        // const midifilename = "../../storage/" + name;
         const midifile = document.getElementById("midifile");
+        const progress = document.getElementById("progress")
+        const currenttime = document.getElementById("currenttime")
+        const totaltime = document.getElementById("totaltime")
+
+        const playM = document.getElementById("playM")
+        const pauseM = document.getElementById("pauseM")
+        const stopM = document.getElementById("stopM")
+        pauseM.style.visibility = "collapse";
+
         var playing = false;
         var totalDuration = 0;
 
@@ -88,35 +94,17 @@
             playing = false;
         }
 
-        // function midiCallback(e) {
-        //     var T = getMS(e.time);
-        //     currenttime.innerHTML = T;
-        //     progress.value = ((e.time * 100) / totalDuration);
-        //     if (e.time == totalDuration) {
-        //         stopM.click();
-        //     }
-        // }
-
-        const progress = document.getElementById("progress")
-        const currenttime = document.getElementById("currenttime")
-        const totaltime = document.getElementById("totaltime")
-
-        const playM = document.getElementById("playM")
         playM.addEventListener("click", playMIDIHandler);
-        const pauseM = document.getElementById("pauseM")
         pauseM.addEventListener("click", pauseMIDIHandler);
-        const stopM = document.getElementById("stopM")
         stopM.addEventListener("click", stopMIDIHandler);
-        pauseM.style.visibility = "collapse";
 
-        // Set the function as message callback
-        // MIDIjs.player_callback = midiCallback;
-
-        MIDIjs.get_duration('data:audio/midi;base64,' + midifile.value, function(seconds) {
-            const T = getMS(seconds);
-            totalDuration = seconds;
-            totaltime.innerHTML = T;
-        });
+        function duration() {
+            MIDIjs.get_duration('data:audio/midi;base64,' + midifile.value, function(seconds) {
+                const T = getMS(seconds);
+                totalDuration = seconds;
+                totaltime.innerHTML = T;
+            });
+        }
     </script>
 @endpush
 </body>

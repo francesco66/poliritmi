@@ -6,12 +6,7 @@
 
     <title>Poliritmi</title>
 
-    {{-- <script
-        src="https://cdn.jsdelivr.net/combine/npm/tone@14.7.58,npm/@magenta/music@1.23.1/es6/core.js,npm/focus-visible@5,npm/html-midi-player@1.5.0">
-    </script> --}}
-
     <script type='text/javascript' src='//www.midijs.net/lib/midi.js'></script>
-    {{-- <script src="http://www.verovio.org/javascript/latest/verovio-toolkit-wasm.js" defer></script> --}}
 
     @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/poliritmi2.js', 'resources/js/verovio2.js'])
 
@@ -108,9 +103,6 @@
                         class="text-blue-400">{{ $midifilename }}</span>
                     è pronto
                 </p>
-                {{-- <midi-player src="{{ asset('/storage/' . $midifilename) }}" sound-font visualizer="#myVisualizer">
-                </midi-player> --}}
-                {{-- <midi-visualizer type="staff" id="myVisualizer"></midi-visualizer> --}}
 
                 <h1 class="text-xl">CSOUND</h1>
                 <button id="play" class="btn btn-primary my-4">PLAY</button>
@@ -123,17 +115,10 @@
 
         {{-- TEST --}}
         <div class="mt-4">
-          <x-midi-player :midifile="$midifilename"></x-midi-player>
+          <x-midi-player></x-midi-player>
         </div>
 
         <button id="viewscore" class="hidden btn btn-secondary my-4">View Score</button>
-
-        {{-- <div class="flex flex-row gap-6 m-auto p-4"> --}}
-            <div class="text-3xl font-bold">
-                <h1>Verovio</h1>
-            </div>
-        {{-- </div> --}}
-
         <div id="notation" class="h-screen"></div>
 
     </div>
